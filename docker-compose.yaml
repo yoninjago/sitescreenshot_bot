@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+
+  db:
+    container_name: db
+    image: postgres:14.4-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+
+  bot:
+    container_name: screenshot_bot
+    build:
+      context: .
+    stop_signal: SIGINT
+    volumes:
+      - logs:/app/logs/
+      - screenshots:/app/screenshots/
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+
+volumes:
+  postgres:
+  logs:
+  screenshots:
